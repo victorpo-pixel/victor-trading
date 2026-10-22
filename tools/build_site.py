@@ -48,7 +48,7 @@ page = r'''<!doctype html>
 * { box-sizing: border-box; }
 body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: radial-gradient(circle at 30% 10%, rgba(227,179,65,.16), transparent 50%), #0a0e1a; color: #ededf0; font-family: -apple-system, system-ui, sans-serif; padding: 24px; }
 .box { width: 100%; max-width: 360px; text-align: center; }
-.logo { width: 64px; height: 64px; border-radius: 16px; background: #e3b341; color: #000; display: grid; place-items: center; font: 800 30px ui-monospace, Menlo, monospace; margin: 0 auto 18px; box-shadow: 0 0 30px rgba(227,179,65,.35); }
+.logo { display: block; width: 88px; height: 88px; border-radius: 22px; background: #e3b341; color: #000; display: grid; place-items: center; font: 800 30px ui-monospace, Menlo, monospace; margin: 0 auto 18px; box-shadow: 0 0 30px rgba(227,179,65,.35); }
 h1 { font: 600 15px ui-monospace, Menlo, monospace; letter-spacing: .22em; margin: 0 0 6px; }
 p { color: #8a96b0; font-size: 14px; margin: 0 0 22px; }
 input[type=password] { width: 100%; padding: 15px 16px; border-radius: 12px; border: 1px solid #34415f; background: #0f1528; color: #fff; font-size: 17px; outline: none; }
@@ -60,7 +60,7 @@ label { display: flex; align-items: center; justify-content: center; gap: 8px; m
 </style></head>
 <body>
 <form class="box" id="f" autocomplete="on" style="visibility:hidden">
-  <div class="logo">V</div>
+  <img class="logo" src="icon-512.png" alt="Victor Trading">
   <h1>VICTOR · TRADING</h1>
   <p>Inserisci la password per aprire la dashboard</p>
   <input type="text" name="username" value="victor" autocomplete="username" hidden>
@@ -127,11 +127,8 @@ tryRemembered();
 '''.replace('__PAYLOAD__', payload)
 open(os.path.join(OUT, 'index.html'), 'w', encoding='utf-8').write(page)
 
-# Icona per la schermata Home
-im = Image.new('RGB', (180, 180), (10, 14, 26)); d = ImageDraw.Draw(im)
-d.rounded_rectangle([22, 22, 158, 158], 30, fill=(227, 179, 65))
-try: f = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf', 92)
-except Exception: f = ImageFont.load_default()
-d.text((90, 92), 'V', font=f, fill=(0, 0, 0), anchor='mm')
-im.save(os.path.join(OUT, 'icon.png'))
+# Icona per la schermata Home (disegno in tools/icon-1024.png)
+src_icon = Image.open(os.path.join(OUT, 'tools', 'icon-1024.png')).convert('RGB')
+src_icon.resize((180, 180), Image.LANCZOS).save(os.path.join(OUT, 'icon.png'))
+src_icon.resize((512, 512), Image.LANCZOS).save(os.path.join(OUT, 'icon-512.png'))
 print('ok', len(page))
