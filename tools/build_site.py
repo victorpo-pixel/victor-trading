@@ -40,14 +40,14 @@ page = r'''<!doctype html>
 <style>
 :root { color-scheme: dark; }
 * { box-sizing: border-box; }
-body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: radial-gradient(circle at 30% 10%, rgba(0,255,136,.16), transparent 50%), #0a0e1a; color: #ededf0; font-family: -apple-system, system-ui, sans-serif; padding: 24px; }
+body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: radial-gradient(circle at 30% 10%, rgba(227,179,65,.16), transparent 50%), #0a0e1a; color: #ededf0; font-family: -apple-system, system-ui, sans-serif; padding: 24px; }
 .box { width: 100%; max-width: 360px; text-align: center; }
-.logo { width: 64px; height: 64px; border-radius: 16px; background: #00ff88; color: #000; display: grid; place-items: center; font: 800 30px ui-monospace, Menlo, monospace; margin: 0 auto 18px; box-shadow: 0 0 30px rgba(0,255,136,.35); }
+.logo { width: 64px; height: 64px; border-radius: 16px; background: #e3b341; color: #000; display: grid; place-items: center; font: 800 30px ui-monospace, Menlo, monospace; margin: 0 auto 18px; box-shadow: 0 0 30px rgba(227,179,65,.35); }
 h1 { font: 600 15px ui-monospace, Menlo, monospace; letter-spacing: .22em; margin: 0 0 6px; }
 p { color: #8a96b0; font-size: 14px; margin: 0 0 22px; }
 input[type=password] { width: 100%; padding: 15px 16px; border-radius: 12px; border: 1px solid #34415f; background: #0f1528; color: #fff; font-size: 17px; outline: none; }
-input[type=password]:focus { border-color: #00ff88; }
-button { width: 100%; margin-top: 12px; padding: 15px; border: 0; border-radius: 12px; background: #00ff88; color: #000; font-weight: 700; font-size: 16px; cursor: pointer; }
+input[type=password]:focus { border-color: #e3b341; }
+button { width: 100%; margin-top: 12px; padding: 15px; border: 0; border-radius: 12px; background: #e3b341; color: #000; font-weight: 700; font-size: 16px; cursor: pointer; }
 button:active { transform: scale(.98); }
 label { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 14px; color: #8a96b0; font-size: 13px; }
 .err { color: #ef5a6f; font-size: 14px; min-height: 20px; margin-top: 12px; }
@@ -104,7 +104,7 @@ open(os.path.join(OUT, 'index.html'), 'w', encoding='utf-8').write(page)
 
 # Icona per la schermata Home
 im = Image.new('RGB', (180, 180), (10, 14, 26)); d = ImageDraw.Draw(im)
-d.rounded_rectangle([22, 22, 158, 158], 30, fill=(0, 255, 136))
+d.rounded_rectangle([22, 22, 158, 158], 30, fill=(227, 179, 65))
 try: f = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf', 92)
 except Exception: f = ImageFont.load_default()
 d.text((90, 92), 'V', font=f, fill=(0, 0, 0), anchor='mm')
