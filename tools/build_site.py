@@ -12,7 +12,7 @@ OUT = '/home/claude/victor-trading'
 ITER = 310000
 
 body = open(SRC, encoding='utf-8').read()
-doc = ('<!doctype html><html lang="it"><head><meta charset="utf-8">'
+doc = ('<!doctype html><html lang="it" class="vt-site"><head><meta charset="utf-8">'
        '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">'
        '<meta name="theme-color" content="#0a0e1a">'
        '<link rel="apple-touch-icon" href="icon.png">'
@@ -87,7 +87,7 @@ function show(html) {
   if (opened) return; opened = true;
   const fr = document.createElement('iframe');
   fr.setAttribute('title', 'Victor Trading');
-  fr.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;border:0;background:#0a0e1a';
+  fr.style.cssText = 'position:fixed;left:0;right:0;bottom:0;top:env(safe-area-inset-top,0px);width:100%;height:calc(100% - env(safe-area-inset-top,0px));border:0;background:#0a0e1a';
   fr.srcdoc = html;
   document.getElementById('f').remove();
   document.body.appendChild(fr);
