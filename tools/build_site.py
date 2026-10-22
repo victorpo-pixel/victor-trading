@@ -18,7 +18,13 @@ doc = ('<!doctype html><html lang="it"><head><meta charset="utf-8">'
        '<link rel="apple-touch-icon" href="icon.png">'
        '</head><body>' + body + '</body></html>')
 
-salt, iv = os.urandom(16), os.urandom(12)
+SALT_FILE = os.path.join(OUT, 'tools', 'salt.b64')
+os.makedirs(os.path.dirname(SALT_FILE), exist_ok=True)
+if os.path.exists(SALT_FILE):
+    salt = base64.b64decode(open(SALT_FILE).read().strip())
+else:
+    salt = os.urandom(16); open(SALT_FILE, 'w').write(base64.b64encode(salt).decode())
+iv = os.urandom(12)
 key = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32, salt=salt, iterations=ITER).derive(PWD)
 ct = AESGCM(key).encrypt(iv, doc.encode('utf-8'), None)
 b64 = lambda b: base64.b64encode(b).decode()
@@ -53,7 +59,7 @@ label { display: flex; align-items: center; justify-content: center; gap: 8px; m
 .err { color: #ef5a6f; font-size: 14px; min-height: 20px; margin-top: 12px; }
 </style></head>
 <body>
-<form class="box" id="f" autocomplete="on">
+<form class="box" id="f" autocomplete="on" style="visibility:hidden">
   <div class="logo">V</div>
   <h1>VICTOR · TRADING</h1>
   <p>Inserisci la password per aprire la dashboard</p>
@@ -65,38 +71,57 @@ label { display: flex; align-items: center; justify-content: center; gap: 8px; m
 </form>
 <script>
 const D = __PAYLOAD__;
+const KEY_NAME = 'vt-key-' + D.s;
 const u8 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
 const b64 = b => btoa(String.fromCharCode(...new Uint8Array(b)));
+let opened = false;
 async function keyFromPw(pw) {
   const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveKey']);
   return crypto.subtle.deriveKey({name: 'PBKDF2', salt: u8(D.s), iterations: D.n, hash: 'SHA-256'}, base, {name: 'AES-GCM', length: 256}, true, ['decrypt']);
 }
-async function openWith(key) {
+async function decrypt(key) {
   const pt = await crypto.subtle.decrypt({name: 'AES-GCM', iv: u8(D.i)}, key, u8(D.c));
-  const html = new TextDecoder().decode(pt);
-  document.open(); document.write(html); document.close();
+  return new TextDecoder().decode(pt);
 }
-// Chiave ricordata (valida finché la password non cambia)
-(async () => {
+function show(html) {
+  if (opened) return; opened = true;
+  const fr = document.createElement('iframe');
+  fr.setAttribute('title', 'Victor Trading');
+  fr.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;border:0;background:#0a0e1a';
+  fr.srcdoc = html;
+  document.getElementById('f').remove();
+  document.body.appendChild(fr);
+  document.title = 'Victor Trading';
+}
+async function tryRemembered() {
+  let saved = null;
+  try { saved = localStorage.getItem(KEY_NAME); } catch (_) {}
+  if (!saved) { document.getElementById('f').style.visibility = 'visible'; return; }
   try {
-    const saved = localStorage.getItem('vt-key-' + D.s);
-    if (saved) { const k = await crypto.subtle.importKey('raw', u8(saved), 'AES-GCM', false, ['decrypt']); await openWith(k); }
-  } catch (e) { try { localStorage.removeItem('vt-key-' + D.s); } catch (_) {} }
-})();
+    const k = await crypto.subtle.importKey('raw', u8(saved), 'AES-GCM', false, ['decrypt']);
+    show(await decrypt(k));
+  } catch (e) {
+    try { localStorage.removeItem(KEY_NAME); } catch (_) {}
+    document.getElementById('f').style.visibility = 'visible';
+  }
+}
 document.getElementById('f').addEventListener('submit', async e => {
   e.preventDefault();
+  if (opened) return;
   const err = document.getElementById('err'), btn = document.getElementById('go');
   err.textContent = ''; btn.textContent = 'Apro…'; btn.disabled = true;
   try {
     const key = await keyFromPw(document.getElementById('pw').value);
+    const html = await decrypt(key);
     if (document.getElementById('rem').checked) {
-      try { localStorage.setItem('vt-key-' + D.s, b64(await crypto.subtle.exportKey('raw', key))); } catch (_) {}
+      try { localStorage.setItem(KEY_NAME, b64(await crypto.subtle.exportKey('raw', key))); } catch (_) {}
     }
-    await openWith(key);
+    show(html);
   } catch (e2) {
     err.textContent = 'Password sbagliata, riprova.'; btn.textContent = 'Apri'; btn.disabled = false;
   }
 });
+tryRemembered();
 </script>
 </body></html>
 '''.replace('__PAYLOAD__', payload)
