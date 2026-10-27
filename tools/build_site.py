@@ -43,7 +43,7 @@ page = r'''<!doctype html>
 <meta name="robots" content="noindex,nofollow">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="icon" href="icon.png">
-<style>
+<style id="login-css">
 :root { color-scheme: dark; }
 * { box-sizing: border-box; }
 body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: radial-gradient(circle at 30% 10%, rgba(227,179,65,.16), transparent 50%), #0a0e1a; color: #ededf0; font-family: -apple-system, system-ui, sans-serif; padding: 24px; }
@@ -70,6 +70,7 @@ label { display: flex; align-items: center; justify-content: center; gap: 8px; m
   <div class="err" id="err"></div>
 </form>
 <script>
+(function () {
 const D = __PAYLOAD__;
 const KEY_NAME = 'vt-key-' + D.s;
 const u8 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
@@ -83,15 +84,33 @@ async function decrypt(key) {
   const pt = await crypto.subtle.decrypt({name: 'AES-GCM', iv: u8(D.i)}, key, u8(D.c));
   return new TextDecoder().decode(pt);
 }
-function show(html) {
+// Apre la dashboard come pagina normale (niente iframe: lo scorrimento funziona sempre)
+async function show(html) {
   if (opened) return; opened = true;
-  const fr = document.createElement('iframe');
-  fr.setAttribute('title', 'Victor Trading');
-  fr.style.cssText = 'position:fixed;left:0;right:0;bottom:0;top:env(safe-area-inset-top,0px);width:100%;height:calc(100% - env(safe-area-inset-top,0px));border:0;background:#0a0e1a';
-  fr.srcdoc = html;
-  document.getElementById('f').remove();
-  document.body.appendChild(fr);
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  document.getElementById('login-css').remove();
+  document.documentElement.className = doc.documentElement.className;
   document.title = 'Victor Trading';
+  const scripts = [];
+  for (const el of [...doc.head.children]) {
+    if (el.tagName === 'SCRIPT') scripts.push(el);
+    else if (el.tagName === 'STYLE' || (el.tagName === 'LINK' && el.rel === 'stylesheet')) document.head.appendChild(document.importNode(el, true));
+  }
+  document.body.innerHTML = '';
+  for (const n of [...doc.body.childNodes]) {
+    if (n.nodeType === 1 && n.tagName === 'SCRIPT') { scripts.push(n); continue; }
+    document.body.appendChild(document.importNode(n, true));
+  }
+  for (const old of scripts) {
+    const sc = document.createElement('script');
+    for (const a of old.attributes) sc.setAttribute(a.name, a.value);
+    if (old.src) {
+      await new Promise(res => { sc.onload = sc.onerror = res; document.head.appendChild(sc); });
+    } else {
+      sc.textContent = old.textContent; document.body.appendChild(sc);
+    }
+  }
+  window.scrollTo(0, 0);
 }
 async function tryRemembered() {
   let saved = null;
@@ -99,10 +118,10 @@ async function tryRemembered() {
   if (!saved) { document.getElementById('f').style.visibility = 'visible'; return; }
   try {
     const k = await crypto.subtle.importKey('raw', u8(saved), 'AES-GCM', false, ['decrypt']);
-    show(await decrypt(k));
+    await show(await decrypt(k));
   } catch (e) {
     try { localStorage.removeItem(KEY_NAME); } catch (_) {}
-    document.getElementById('f').style.visibility = 'visible';
+    if (!opened) document.getElementById('f').style.visibility = 'visible';
   }
 }
 document.getElementById('f').addEventListener('submit', async e => {
@@ -116,12 +135,13 @@ document.getElementById('f').addEventListener('submit', async e => {
     if (document.getElementById('rem').checked) {
       try { localStorage.setItem(KEY_NAME, b64(await crypto.subtle.exportKey('raw', key))); } catch (_) {}
     }
-    show(html);
+    await show(html);
   } catch (e2) {
     err.textContent = 'Password sbagliata, riprova.'; btn.textContent = 'Apri'; btn.disabled = false;
   }
 });
 tryRemembered();
+})();
 </script>
 </body></html>
 '''.replace('__PAYLOAD__', payload)
