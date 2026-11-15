@@ -14,7 +14,7 @@ ITER = 310000
 body = open(SRC, encoding='utf-8').read()
 doc = ('<!doctype html><html lang="it" class="vt-site"><head><meta charset="utf-8">'
        '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">'
-       '<meta name="theme-color" content="#0c0c10">'
+       '<meta name="theme-color" content="#110d0c">'
        '<link rel="apple-touch-icon" href="icon.png">'
        '</head><body>' + body + '</body></html>')
 
@@ -39,23 +39,23 @@ page = r'''<!doctype html>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Victor Trading">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#0c0c10">
+<meta name="theme-color" content="#110d0c">
 <meta name="robots" content="noindex,nofollow">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="icon" href="icon.png">
 <style id="login-css">
 :root { color-scheme: dark; }
 * { box-sizing: border-box; }
-body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: radial-gradient(circle at 30% 10%, rgba(139,123,255,.16), transparent 50%), #0c0c10; color: #ededf0; font-family: -apple-system, system-ui, sans-serif; padding: 24px; }
+body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: radial-gradient(circle at 30% 10%, rgba(255,122,89,.16), transparent 50%), #110d0c; color: #ededf0; font-family: -apple-system, system-ui, sans-serif; padding: 24px; }
 .box { width: 100%; max-width: 360px; text-align: center; }
-.logo { display: block; width: 88px; height: 88px; border-radius: 22px; background: #8b7bff; color: #000; display: grid; place-items: center; font: 800 30px ui-monospace, Menlo, monospace; margin: 0 auto 18px; box-shadow: 0 0 30px rgba(139,123,255,.35); }
+.logo { display: block; width: 88px; height: 88px; border-radius: 22px; background: #ff7a59; color: #000; display: grid; place-items: center; font: 800 30px ui-monospace, Menlo, monospace; margin: 0 auto 18px; box-shadow: 0 0 30px rgba(255,122,89,.35); }
 h1 { font: 600 15px ui-monospace, Menlo, monospace; letter-spacing: .22em; margin: 0 0 6px; }
-p { color: #9b9bab; font-size: 14px; margin: 0 0 22px; }
-input[type=password] { width: 100%; padding: 15px 16px; border-radius: 12px; border: 1px solid #3d3d4b; background: #15151b; color: #fff; font-size: 17px; outline: none; }
-input[type=password]:focus { border-color: #8b7bff; }
-button { width: 100%; margin-top: 12px; padding: 15px; border: 0; border-radius: 12px; background: #8b7bff; color: #000; font-weight: 700; font-size: 16px; cursor: pointer; }
+p { color: #b3a19a; font-size: 14px; margin: 0 0 22px; }
+input[type=password] { width: 100%; padding: 15px 16px; border-radius: 12px; border: 1px solid #523e37; background: #1a1412; color: #fff; font-size: 17px; outline: none; }
+input[type=password]:focus { border-color: #ff7a59; }
+button { width: 100%; margin-top: 12px; padding: 15px; border: 0; border-radius: 12px; background: #ff7a59; color: #000; font-weight: 700; font-size: 16px; cursor: pointer; }
 button:active { transform: scale(.98); }
-label { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 14px; color: #9b9bab; font-size: 13px; }
+label { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 14px; color: #b3a19a; font-size: 13px; }
 .err { color: #ef5a6f; font-size: 14px; min-height: 20px; margin-top: 12px; }
 </style></head>
 <body>
